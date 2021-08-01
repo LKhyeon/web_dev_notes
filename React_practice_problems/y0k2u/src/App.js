@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import ImagePopulator from "./components/ImagePopulator";
 import "./styles.css";
 
 export default function App() {
+
+  const [query, setQuery] = useState('');
+
+  const searchHander = (event) => {
+    if (event.key === 'Enter') {
+      setQuery(encodeURI(event.currentTarget.value));
+    }
+  }
+
   return (
     <div className="App">
-      <h1>Hello, world!</h1>
+      <input onKeyPress={searchHander} />
+      <ImagePopulator query={query}/>
+      <h1>INSTRUCTION</h1>
       <h2>Create a image searching app</h2>
       <p>
         The goal of this challenge is to build an app that can search for images

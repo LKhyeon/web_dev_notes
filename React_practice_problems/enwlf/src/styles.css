@@ -1,0 +1,19 @@
+.App {
+  font-family: sans-serif;
+}
+.Container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  margin: auto;
+  border: solid 2px gray;
+  width: 624px;
+}
+.tile {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  border: solid 2px gray;
+  height: 100px;
+  width: 100px;
+  font-size: larger;
+}

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import pixabayCall from "../APICalls/pixabayCall";
 
 export default function ImagePopulator(props) {
 
@@ -14,25 +15,7 @@ export default function ImagePopulator(props) {
   }
 
   const fetchData = useCallback((url) => {
-    fetch(url)
-    .then(res => {
-      if (res && res.ok) {
-        return res.json();
-      }
-    })
-    .then(data => {
-      const imgElements = [];
-      const arr = data.hits;
-      for (let i = 0; i < arr.length; i++) {
-        imgElements.push(
-          <div key={`page=${pageNum} num=${i}`} className='imgGrid'>
-            <img alt='' src={arr[i].previewURL}/>
-          </div>
-        );
-      }
-      setImages(images => images.concat(imgElements));
-    })
-    .catch(err => console.log(err));
+    pixabayCall(url, setImages, pageNum);
   }, [pageNum]);
 
   useEffect(() => {

@@ -14,7 +14,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <input onKeyPress={searchHander} />
+      <input className="searchBar" onKeyPress={searchHander} />
       <ImagePopulator query={query}/>
       <h1>INSTRUCTION</h1>
       <h2>Create a image searching app</h2>

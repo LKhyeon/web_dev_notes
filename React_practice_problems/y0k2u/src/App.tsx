@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import ImagePopulator from "./components/ImagePopulator";
 import "./styles.css";
 
-export default function App() {
+export default function App(): JSX.Element {
 
   const [query, setQuery] = useState('');
 
-  const searchHander = (event) => {
+  const searchHander = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       setQuery(encodeURI(event.currentTarget.value));
     }

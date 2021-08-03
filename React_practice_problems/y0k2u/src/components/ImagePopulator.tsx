@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import pixabayCall from "../APICalls/pixabayCall";
 
-export default function ImagePopulator(props) {
+interface ImagePopulatorProps {
+  query: string,
+};
+
+export default function ImagePopulator(props: ImagePopulatorProps): JSX.Element {
 
   const [urlEncoded, setUrlEncoded] = useState('');
   const [pageNum, setPageNum] = useState(1);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<Array<JSX.Element>>([]);
 
-  const loadMore = (event) => {
-    const bottom = event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight;
+  const loadMore = (event: React.UIEvent<HTMLElement>) => {
+    const bottom = event.currentTarget.scrollHeight - event.currentTarget.scrollTop === event.currentTarget.clientHeight;
     if (bottom) {
       setPageNum(pageNum + 1);
     }

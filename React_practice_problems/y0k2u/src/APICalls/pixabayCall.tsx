@@ -1,6 +1,10 @@
 import React from "react";
 
-export default function pixabayCall(url, setImages, pageNum) {
+export default function pixabayCall(
+  url: string,
+  setImages: React.Dispatch<React.SetStateAction<JSX.Element[]>>,
+  pageNum: number
+) {
   fetch(url)
     .then(res => {
       if (res && res.ok) {
@@ -8,7 +12,7 @@ export default function pixabayCall(url, setImages, pageNum) {
       }
     })
     .then(data => {
-      const imgElements = [];
+      const imgElements: Array<JSX.Element> = [];
       const arr = data.hits;
       for (let i = 0; i < arr.length; i++) {
         imgElements.push(

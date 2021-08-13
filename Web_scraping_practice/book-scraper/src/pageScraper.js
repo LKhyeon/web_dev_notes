@@ -40,21 +40,22 @@ var scraperObject = {
     url: 'http://books.toscrape.com',
     scraper: function (browser) {
         return __awaiter(this, void 0, void 0, function () {
-            var page, urls;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var page, urls, pagePromise, _a, _b, _i, link, currentPageData;
+            var _this = this;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4 /*yield*/, browser.newPage()];
                     case 1:
-                        page = _a.sent();
+                        page = _c.sent();
                         console.log("Navigating to " + this.url + ".");
                         return [4 /*yield*/, page.goto(this.url)];
                     case 2:
-                        _a.sent();
+                        _c.sent();
                         // Wait until the DOM loads and the class is to scrap is visible.
                         return [4 /*yield*/, page.waitForSelector('.page_inner')];
                     case 3:
                         // Wait until the DOM loads and the class is to scrap is visible.
-                        _a.sent();
+                        _c.sent();
                         return [4 /*yield*/, page.$$eval('section ol > li', function (links) {
                                 links = links.filter(function (link) {
                                     var element = link.querySelector('.instock.availability > i');
@@ -70,9 +71,97 @@ var scraperObject = {
                                 return strLinks;
                             })];
                     case 4:
-                        urls = _a.sent();
-                        console.log(urls);
-                        return [2 /*return*/];
+                        urls = _c.sent();
+                        pagePromise = function (link) { return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                            var dataObj, newPage, _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+                            return __generator(this, function (_o) {
+                                switch (_o.label) {
+                                    case 0:
+                                        dataObj = {};
+                                        return [4 /*yield*/, browser.newPage()];
+                                    case 1:
+                                        newPage = _o.sent();
+                                        return [4 /*yield*/, newPage.goto(link)];
+                                    case 2:
+                                        _o.sent();
+                                        _a = dataObj;
+                                        _b = 'bookTitle';
+                                        return [4 /*yield*/, newPage.$eval('.product_main > h1', function (text) { return text.textContent; })];
+                                    case 3:
+                                        _a[_b] = _o.sent();
+                                        _c = dataObj;
+                                        _d = 'bookPrice';
+                                        return [4 /*yield*/, newPage.$eval('.price_color', function (text) { return text.textContent; })];
+                                    case 4:
+                                        _c[_d] = _o.sent();
+                                        _e = dataObj;
+                                        _f = 'noAvailable';
+                                        return [4 /*yield*/, newPage.$eval('.instock.availability', function (text) {
+                                                // Strip new line and tab spaces
+                                                if (text.textContent) {
+                                                    var textStr = text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "");
+                                                    // Get the number of stock available
+                                                    var regexp = /^.*\((.*)\).*$/i;
+                                                    var regexArr = regexp.exec(textStr);
+                                                    if (regexArr) {
+                                                        return regexArr[1].split(' ')[0];
+                                                    }
+                                                }
+                                                return '';
+                                            })];
+                                    case 5:
+                                        _e[_f] = _o.sent();
+                                        _g = dataObj;
+                                        _h = 'imageUrl';
+                                        return [4 /*yield*/, newPage.$eval('#product_gallery img', function (img) {
+                                                if (img instanceof HTMLImageElement) {
+                                                    return img.src;
+                                                }
+                                                return '';
+                                            })];
+                                    case 6:
+                                        _g[_h] = _o.sent();
+                                        _j = dataObj;
+                                        _k = 'bookDescription';
+                                        return [4 /*yield*/, newPage.$eval('#product_description', function (div) {
+                                                if (div && div.nextSibling && div.nextSibling.nextSibling) {
+                                                    return div.nextSibling.nextSibling.textContent;
+                                                }
+                                                return '';
+                                            })];
+                                    case 7:
+                                        _j[_k] = _o.sent();
+                                        _l = dataObj;
+                                        _m = 'upc';
+                                        return [4 /*yield*/, newPage.$eval('.table.table-striped > tbody > tr > td', function (table) { return table.textContent; })];
+                                    case 8:
+                                        _l[_m] = _o.sent();
+                                        resolve(dataObj);
+                                        return [4 /*yield*/, newPage.close()];
+                                    case 9:
+                                        _o.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }); };
+                        _a = [];
+                        for (_b in urls)
+                            _a.push(_b);
+                        _i = 0;
+                        _c.label = 5;
+                    case 5:
+                        if (!(_i < _a.length)) return [3 /*break*/, 8];
+                        link = _a[_i];
+                        return [4 /*yield*/, pagePromise(urls[link])];
+                    case 6:
+                        currentPageData = _c.sent();
+                        // scrapedData.push(currentPageData);
+                        console.log(currentPageData);
+                        _c.label = 7;
+                    case 7:
+                        _i++;
+                        return [3 /*break*/, 5];
+                    case 8: return [2 /*return*/];
                 }
             });
         });

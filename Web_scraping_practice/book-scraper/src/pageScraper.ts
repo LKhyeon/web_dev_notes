@@ -1,4 +1,5 @@
 import { Browser } from "puppeteer";
+import { dataObj } from "./interfaces/pageScraperData";
 
 const scraperObject = {
   url: 'http://books.toscrape.com',
@@ -21,8 +22,50 @@ const scraperObject = {
         return anchorEle.href;
       });
       return strLinks;
-    })
-    console.log(urls);
+    });
+
+    // Loop through each of those links, open a new page instance and get the relevant data from them
+    let pagePromise = (link: string) => new Promise(async(resolve, reject) => {
+      let dataObj = <dataObj> {};
+      let newPage = await browser.newPage();
+      await newPage.goto(link);
+      dataObj['bookTitle'] = await newPage.$eval('.product_main > h1', text => text.textContent);
+      dataObj['bookPrice'] = await newPage.$eval('.price_color', text => text.textContent);
+      dataObj['noAvailable'] = await newPage.$eval('.instock.availability', text => {
+        // Strip new line and tab spaces
+        if (text.textContent) {
+          const textStr = text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "");
+          // Get the number of stock available
+          const regexp = /^.*\((.*)\).*$/i;
+          const regexArr = regexp.exec(textStr);
+          if (regexArr) {
+            return regexArr[1].split(' ')[0];
+          }
+        }
+        return '';
+      });
+      dataObj['imageUrl'] = await newPage.$eval('#product_gallery img', img => {
+        if (img instanceof HTMLImageElement) {
+          return img.src;
+        }
+        return '';
+      });
+      dataObj['bookDescription'] = await newPage.$eval('#product_description', div => {
+        if (div && div.nextSibling && div.nextSibling.nextSibling) {
+          return div.nextSibling.nextSibling.textContent;
+        }
+        return '';
+      });
+      dataObj['upc'] = await newPage.$eval('.table.table-striped > tbody > tr > td', table => table.textContent);
+      resolve(dataObj);
+      await newPage.close();
+    });
+
+    for (const link in urls) {
+      let currentPageData = await pagePromise(urls[link]);
+      // scrapedData.push(currentPageData);
+      console.log(currentPageData);
+    }
   }
 }
 
